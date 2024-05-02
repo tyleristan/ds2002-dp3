@@ -6,6 +6,8 @@ import json
 # Set up your SQS queue URL and boto3 client
 url = "https://sqs.us-east-1.amazonaws.com/440848399208/twg2nk"
 sqs = boto3.client('sqs')
+storage = {}
+handlelist = []
 
 def delete_message(handle):
     try:
@@ -44,6 +46,9 @@ def get_message():
             print(f"Order: {order}")
             print(f"Word: {word}")
 
+            storage[order] = word
+            handlelist.append(handle)
+
         # If there is no message in the queue, print a message and exit    
         else:
             print("No message in the queue")
@@ -55,4 +60,11 @@ def get_message():
 
 # Trigger the function
 if __name__ == "__main__":
-    get_message()
+    for i in range(10):
+        get_message()
+        
+sentence = [storage[key] for key in sorted(storage.keys())]
+print(" ".join(sentence))
+
+for i in handlelist:
+    delete_message(i)
